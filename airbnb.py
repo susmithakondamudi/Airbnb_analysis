@@ -186,10 +186,10 @@ if selected == "Explore":
     st.markdown("## Explore more about the Airbnb data")
     
     # GETTING USER INPUTS
-    country = st.sidebar.multiselect('Select a Country',sorted(df.Country.unique()),sorted(df.Country.unique()))
-    prop = st.sidebar.multiselect('Select Property_type',sorted(df.Property_type.unique()),sorted(df.Property_type.unique()))
-    room = st.sidebar.multiselect('Select Room_type',sorted(df.Room_type.unique()),sorted(df.Room_type.unique()))
-    price = st.slider('Select Price',df.Price.min(),df.Price.max(),(df.Price.min(),df.Price.max()))
+    country = st.sidebar.multiselect('Select a Country',country_list())
+        prop = st.sidebar.multiselect('Select Property_type',property_type())
+        room = st.sidebar.multiselect('Select Room_type',Room_type())
+        price = st.slider('Select Price',df.Price.min(),df.Price.max(),(df.Price.min(),df.Price.max()))
     
     # CONVERTING THE USER INPUT INTO QUERY
     query = f'Country in {country} & Room_type in {room} & Property_type in {prop} & Price >= {price[0]} & Price <= {price[1]}'
