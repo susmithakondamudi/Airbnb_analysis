@@ -49,7 +49,10 @@ background_image_url = "https://images.contentstack.io/v3/assets/bltb428ce5d46f8
 setting_bg(background_image_url)
 
 #st.markdown("<h1 style='text-align: center; color: white;'Airbnb Analysis</h1>", unsafe_allow_html=True) 
-st.title(':white[Airbnb Analysis] ')
+#st.title(':white[Airbnb Analysis] ')
+st.markdown("""<div style='border:5px solid black; background-color:white; padding:10px;'> 
+            <h1 style='text-align:center; color:red;'>Airbnb Analysis</h1> </div>""", 
+            unsafe_allow_html=True)
 
 # Creating option menu in the side bar
 with st.sidebar:
@@ -99,35 +102,39 @@ def Room_type():
     Room_type = [i[0] for i in data]
     return Room_type
 
+
+def Bed_type():
+    mycursor.execute(f"""select distinct Bed_type
+                     from airbnb_tab;""")
+    data = mycursor.fetchall()
+    Bed_type = [i[0] for i in data]
+    return Bed_type
+
 # HOME PAGE
 if selected == "Home":
     
     st.markdown("## :blue[Domain] : :Travel Industry, Property Management and Tourism")
     st.markdown("## :blue[Technologies used] : Python, Pandas, Plotly, Streamlit, MongoDB")
     st.markdown("## :blue[Overview] : To analyze Airbnb data using MongoDB Atlas, perform data cleaning and preparation, develop interactive visualizations, and create dynamic plots to gain insights into pricing variations, availability patterns, and location-based trends.")
-    # col2.markdown("#   ")
-    # col2.markdown("#   ")
-    # #col2.image("home.jpg")
-
+   
 # OVERVIEW PAGE
 if selected == "Overview":
-    #tab1,tab2 = st.tabs(["$\huge 📝 RAW DATA $", "$\huge🚀 INSIGHTS $"])
+    tab1,tab2 = st.tabs(["$📝 DATAFRAME $", "$🚀 INSIGHTS $"])
     
     # RAW DATA TAB
-    #with tab1:
-    if st.button("Click to view Dataframe"):
-        st.write(df)
-    
+    with tab1:
+        if st.button("Click to view Dataframe"):
+            st.write(df)
+        
     # INSIGHTS TAB
-    if st.button("INSIGHTS"):
+    with tab2:
         # GETTING USER INPUTS
         country = st.sidebar.multiselect('Select a Country',country_list())
         prop = st.sidebar.multiselect('Select Property_type',property_type())
         room = st.sidebar.multiselect('Select Room_type',Room_type())
-        price = st.slider('Select Price',df.Price.min(),df.Price.max(),(df.Price.min(),df.Price.max()))
         
         # CONVERTING THE USER INPUT INTO QUERY
-        query = f'Country in {country} & Room_type in {room} & Property_type in {prop} & Price >= {price[0]} & Price <= {price[1]}'
+        query = f'Country in {country} & Room_type in {room} & Property_type in {prop}'
         
         # CREATING COLUMNS
         col1,col2 = st.columns(2,gap='medium')
@@ -187,12 +194,12 @@ if selected == "Explore":
     
     # GETTING USER INPUTS
     country = st.sidebar.multiselect('Select a Country',country_list())
-        prop = st.sidebar.multiselect('Select Property_type',property_type())
-        room = st.sidebar.multiselect('Select Room_type',Room_type())
-        price = st.slider('Select Price',df.Price.min(),df.Price.max(),(df.Price.min(),df.Price.max()))
+    prop = st.sidebar.multiselect('Select Property_type',property_type())
+    room = st.sidebar.multiselect('Select Room_type',Room_type())
     
+
     # CONVERTING THE USER INPUT INTO QUERY
-    query = f'Country in {country} & Room_type in {room} & Property_type in {prop} & Price >= {price[0]} & Price <= {price[1]}'
+    query = f'Country in {country} & Room_type in {room} & Property_type in {prop}'
     
     # HEADING 1
     st.markdown("## Price Analysis")
@@ -215,14 +222,15 @@ if selected == "Explore":
         # HEADING 2
         st.markdown("## Availability Analysis")
         
-        # AVAILABILITY BY ROOM TYPE BOX PLOT
-        fig = px.box(data_frame=df.query(query),
+        # AVAILABILITY BY ROOM TYPE BAR PLOT
+        fig = px.bar(data_frame=df.query(query),
                      x='Room_type',
                      y='Availability_365',
                      color='Room_type',
                      title='Availability by Room_type'
                     )
         st.plotly_chart(fig,use_container_width=True)
+
         
     with col2:
         
