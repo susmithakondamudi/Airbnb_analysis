@@ -76,6 +76,11 @@ mydb=mysql.connector.connect(
             database = "airbnb_data")
 mycursor=mydb.cursor()
 
+def air_bnb():
+        mycursor.execute( "SELECT * FROM airbnb_data.airbnb_tab;")
+        data = mycursor.fetchall()
+        df = pd.DataFrame(data, columns=mycursor.column_names)
+        return df
         
 def country_list():
     mycursor.execute(f"""select distinct Country
@@ -139,7 +144,8 @@ if selected == "Overview":
         with col1:
             
             # TOP 10 PROPERTY TYPES BAR CHART
-            df1 = df.query(query).groupby(["Property_type"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
+            df1 = air_bnb()
+            df1= df1.query(query).groupby(["Property_type"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
             fig = px.bar(df1,
                          title='Top 10 Property Types',
                          x='Listings',
@@ -150,7 +156,8 @@ if selected == "Overview":
             st.plotly_chart(fig,use_container_width=True) 
         
             # TOP 10 HOSTS BAR CHART
-            df2 = df.query(query).groupby(["Host_name"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
+            df2 = air_bnb()
+            df2= df2.query(query).groupby(["Host_name"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
             fig = px.bar(df2,
                          title='Top 10 Hosts with Highest number of Listings',
                          x='Listings',
@@ -164,8 +171,9 @@ if selected == "Overview":
         with col2:
             
             # TOTAL LISTINGS IN EACH ROOM TYPES PIE CHART
-            df1 = df.query(query).groupby(["Room_type"]).size().reset_index(name="counts")
-            fig = px.pie(df1,
+            df3 = air_bnb()
+            df3 = df3.query(query).groupby(["Room_type"]).size().reset_index(name="counts")
+            fig = px.pie(df3,
                          title='Total Listings in each Room_types',
                          names='Room_type',
                          values='counts',
@@ -175,8 +183,9 @@ if selected == "Overview":
             st.plotly_chart(fig,use_container_width=True)
             
             # TOTAL LISTINGS BY COUNTRY CHOROPLETH MAP
-            country_df = df.query(query).groupby(['Country'],as_index=False)['Name'].count().rename(columns={'Name' : 'Total_Listings'})
-            fig = px.choropleth(country_df,
+            df4 = air_bnb()
+            df4 = df4.query(query).groupby(['Country'],as_index=False)['Name'].count().rename(columns={'Name' : 'Total_Listings'})
+            fig = px.choropleth(df4,
                                 title='Total Listings in each Country',
                                 locations='Country',
                                 locationmode='country names',
