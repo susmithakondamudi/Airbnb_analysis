@@ -13,7 +13,7 @@ icon = Image.open("ICN.png")
 st.set_page_config(page_title= "Airbnb Data Visualization ",
                    page_icon= icon,
                    layout= "wide",
-                   initial_sidebar_state= "expanded"),
+                   initial_sidebar_state= "expanded")
                 
 
 def setting_bg(background_image_url):
@@ -48,8 +48,6 @@ def setting_bg(background_image_url):
 background_image_url = "https://images.contentstack.io/v3/assets/bltb428ce5d46f8efd8/blt304100c88b563ae5/5e72688401b3dc04d25c31dd/BeloRauschBG.png?crop=16:9&width=1050&height=591&auto=webp"
 setting_bg(background_image_url)
 
-#st.markdown("<h1 style='text-align: center; color: white;'Airbnb Analysis</h1>", unsafe_allow_html=True) 
-#st.title(':white[Airbnb Analysis] ')
 st.markdown("""<div style='border:5px solid black; background-color:white; padding:10px;'> 
             <h1 style='text-align:center; color:red;'>Airbnb Analysis</h1> </div>""", 
             unsafe_allow_html=True)
@@ -61,8 +59,7 @@ with st.sidebar:
                            menu_icon= "menu-button-wide",
                            default_index=0,
                            styles={"nav-link": {"font-size": "20px", "text-align": "left", "margin": "-2px", "--hover-color": "#FF5A5F"},
-                                   "nav-link-selected": {"background-color": "#FF5A5F"}}
-                          )
+                                   "nav-link-selected": {"background-color": "#FF5A5F"}})
 
 # CREATING CONNECTION WITH MONGODB ATLAS AND RETRIEVING THE DATA
 client =pymongo.MongoClient("mongodb+srv://susmithakondamudi:1234@cluster0.vdx5dii.mongodb.net/?retryWrites=true&w=majority")
@@ -113,7 +110,7 @@ def Bed_type():
 # HOME PAGE
 if selected == "Home":
     
-    st.markdown("## :blue[Domain] : :Travel Industry, Property Management and Tourism")
+    st.markdown("## :blue[Domain] : Travel Industry, Property Management and Tourism")
     st.markdown("## :blue[Technologies used] : Python, Pandas, Plotly, Streamlit, MongoDB")
     st.markdown("## :blue[Overview] : To analyze Airbnb data using MongoDB Atlas, perform data cleaning and preparation, develop interactive visualizations, and create dynamic plots to gain insights into pricing variations, availability patterns, and location-based trends.")
    
