@@ -6,7 +6,6 @@ import plotly.express as px
 from streamlit_option_menu import option_menu
 from PIL import Image
 import mysql.connector
-import pandas as pd
 
 # Setting up page configuration
 icon = Image.open("ICN.png")
@@ -131,12 +130,13 @@ if selected == "Overview":
     # INSIGHTS TAB
     with tab2:
         # GETTING USER INPUTS
-        country = st.sidebar.multiselect('Select a Country',country_list())
-        prop = st.sidebar.multiselect('Select Property_type',property_type())
-        room = st.sidebar.multiselect('Select Room_type',Room_type())
+        country = st.sidebar.multiselect('Select a Country',sorted(df.Country.unique()),sorted(df.Country.unique()))
+        prop = st.sidebar.multiselect('Select Property_type',sorted(df.Property_type.unique()),sorted(df.Property_type.unique()))
+        room = st.sidebar.multiselect('Select Room_type',sorted(df.Room_type.unique()),sorted(df.Room_type.unique()))
+        price = st.slider('Select Price',df.Price.min(),df.Price.max(),(df.Price.min(),df.Price.max()))
         
         # CONVERTING THE USER INPUT INTO QUERY
-        query = f'Country in {country} & Room_type in {room} & Property_type in {prop}'
+        query = f'Country in {country} & Room_type in {room} & Property_type in {prop} & Price >= {price[0]} & Price <= {price[1]}'
         
         # CREATING COLUMNS
         col1,col2 = st.columns(2,gap='medium')
@@ -144,8 +144,7 @@ if selected == "Overview":
         with col1:
             
             # TOP 10 PROPERTY TYPES BAR CHART
-            df1 = air_bnb()
-            df1= df1.query(query).groupby(["Property_type"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
+            df1 = df.query(query).groupby(["Property_type"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
             fig = px.bar(df1,
                          title='Top 10 Property Types',
                          x='Listings',
@@ -156,8 +155,7 @@ if selected == "Overview":
             st.plotly_chart(fig,use_container_width=True) 
         
             # TOP 10 HOSTS BAR CHART
-            df2 = air_bnb()
-            df2= df2.query(query).groupby(["Host_name"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
+            df2 = df.query(query).groupby(["Host_name"]).size().reset_index(name="Listings").sort_values(by='Listings',ascending=False)[:10]
             fig = px.bar(df2,
                          title='Top 10 Hosts with Highest number of Listings',
                          x='Listings',
@@ -171,9 +169,8 @@ if selected == "Overview":
         with col2:
             
             # TOTAL LISTINGS IN EACH ROOM TYPES PIE CHART
-            df3 = air_bnb()
-            df3 = df3.query(query).groupby(["Room_type"]).size().reset_index(name="counts")
-            fig = px.pie(df3,
+            df1 = df.query(query).groupby(["Room_type"]).size().reset_index(name="counts")
+            fig = px.pie(df1,
                          title='Total Listings in each Room_types',
                          names='Room_type',
                          values='counts',
@@ -183,9 +180,8 @@ if selected == "Overview":
             st.plotly_chart(fig,use_container_width=True)
             
             # TOTAL LISTINGS BY COUNTRY CHOROPLETH MAP
-            df4 = air_bnb()
-            df4 = df4.query(query).groupby(['Country'],as_index=False)['Name'].count().rename(columns={'Name' : 'Total_Listings'})
-            fig = px.choropleth(df4,
+            country_df = df.query(query).groupby(['Country'],as_index=False)['Name'].count().rename(columns={'Name' : 'Total_Listings'})
+            fig = px.choropleth(country_df,
                                 title='Total Listings in each Country',
                                 locations='Country',
                                 locationmode='country names',
@@ -199,14 +195,13 @@ if selected == "Explore":
     st.markdown("## Explore more about the Airbnb data")
     
     # GETTING USER INPUTS
-    country = st.sidebar.multiselect('Select a Country',country_list())
-    prop = st.sidebar.multiselect('Select Property_type',property_type())
-    room = st.sidebar.multiselect('Select Room_type',Room_type())
+    country = st.sidebar.multiselect('Select a Country',sorted(df.Country.unique()),sorted(df.Country.unique()))
+    prop = st.sidebar.multiselect('Select Property_type',sorted(df.Property_type.unique()),sorted(df.Property_type.unique()))
+    room = st.sidebar.multiselect('Select Room_type',sorted(df.Room_type.unique()),sorted(df.Room_type.unique()))
+    price = st.slider('Select Price',df.Price.min(),df.Price.max(),(df.Price.min(),df.Price.max()))
     
-
     # CONVERTING THE USER INPUT INTO QUERY
-    query = f'Country in {country} & Room_type in {room} & Property_type in {prop}'
-    
+    query = f'Country in {country} & Room_type in {room} & Property_type in {prop} & Price >= {price[0]} & Price <= {price[1]}'
     # HEADING 1
     st.markdown("## Price Analysis")
     
@@ -243,13 +238,13 @@ if selected == "Explore":
         # AVG PRICE IN COUNTRIES SCATTERGEO
         country_df = df.query(query).groupby('Country',as_index=False)['Price'].mean()
         fig = px.scatter_geo(data_frame=country_df,
-                                       locations='Country',
-                                       color= 'Price', 
-                                       hover_data=['Price'],
-                                       locationmode='country names',
-                                       size='Price',
-                                       title= 'Avg Price in each Country',
-                                       color_continuous_scale='agsunset'
+                            locations='Country',
+                            color= 'Price', 
+                            hover_data=['Price'],
+                            locationmode='country names',
+                            size='Price',
+                            title= 'Avg Price in each Country',
+                            color_continuous_scale='agsunset'
                             )
         col2.plotly_chart(fig,use_container_width=True)
         
